@@ -1,0 +1,67 @@
+server:
+  name: "AllergyBase"
+  mode: "dev"
+  max_connections: 1000
+  max_qps: 100
+
+otel:
+  collector_addr: "127.0.0.1:4317"
+
+user:
+  name: "UserService"
+  rpc_addr: ":8897"
+  default_avatar: "http://localhost:8080/avatars/default.jpg"
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  username: "allergybase"
+  password: "allergybase"
+  database: "allergybase"
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: "AllergyBase"
+  db:
+    user: 0      # 用户服务
+    video: 1     # 视频服务
+    social: 2    # 社交服务
+
+etcd:
+  addr: "127.0.0.1:2379"
+
+kafka:
+  network: "tcp"
+  address: "127.0.0.1:9092"
+  user: "allergybase"
+  password: "allergybase-password"
+
+jwt:
+  secret: "allergybasejwtsecretv1"
+  expires_time: 86400  
+
+gateway:
+  addr: ":8080"
+
+elasticsearch:
+  addr: "127.0.0.1:9200"
+
+upyun:
+  operator: "yxrxy"
+  password: ""
+  ussDomain: "https://v0.api.upyun.com/yxrxy-video-upyun"
+  imageDomain: "http://yxrxy-image-upyun.test.upcdn.net"  
+  videoDomain: "http://yxrxy-video-upyun.test.upcdn.net" 
+
+upload:
+  avatar:
+    max_size: 5242880  # 5MB
+    allowed_types: ["image/jpeg", "image/png"]
+    upload_dir: "src/storage/avatars"
+    base_url: "http://localhost:8080/avatars"
+
+api_key:
+  key: ""
+  base_url: "https://api.openai.com/v1" # 官网
+  proxy: "http://127.0.0.1:7897" # clash的

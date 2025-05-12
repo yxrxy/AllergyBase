@@ -1,0 +1,15 @@
+docker/data/mysql/
+docker/data/mysql/*
+
+.git
+.gitignore
+.env
+*.md
+.editorconfig
+.golangci.yml
+docker-compose.yml
+docker-compose.ci.yml
+README.md
+/test
+/.github
+*.log
