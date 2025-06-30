@@ -23,10 +23,7 @@ redis:
   host: "127.0.0.1"
   port: 6379
   password: "AllergyBase"
-  db:
-    user: 0      # 用户服务
-    video: 1     # 视频服务
-    social: 2    # 社交服务
+  db: 0  # 统一使用0号库
 
 etcd:
   addr: "127.0.0.1:2379"
@@ -65,3 +62,25 @@ api_key:
   key: ""
   base_url: "https://api.openai.com/v1" # 官网
   proxy: "http://127.0.0.1:7897" # clash的
+
+# 临床服务配置
+clinical:
+  name: "ClinicalService"
+  rpc_addr: ":9001"
+
+# 随访服务配置
+followup:
+  name: "FollowupService"
+  rpc_addr: ":9002"
+
+# 流行病学服务配置
+epidemiology:
+  name: "EpidemiologyService"
+  rpc_addr: ":9003"
+
+# 生物样本库服务配置
+biobank:
+  name: "BiobankService"
+  rpc_addr: ":9004"
+  storage:
+    path: "storage/biobank"  # 样本文件存储路径

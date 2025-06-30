@@ -23,12 +23,14 @@ IDL_PATH = $(DIR)/idl
 OUTPUT_PATH = $(DIR)/output
 
 # 服务名
-SERVICES := gateway user social interaction video
+SERVICES := gateway user clinical biobank epidemiology followup integration
 service = $(word 1, $@)
 
 .PHONY: help
 help:
 	@echo "Available targets:"
+	@echo "  all               : Build all backend services."
+	@echo "  gen-code          : Generate all IDL code (Kitex + Hertz)."
 	@echo "  {service name}    : Build a specific service (e.g., make social). use BUILD_ONLY=1 to avoid auto bootstrap."
 	@echo "                      Available service list: [${SERVICES}]"
 	@echo "  env-up            : Start the docker-compose environment."
@@ -36,8 +38,44 @@ help:
 	@echo "  kitex-gen-%       : Generate Kitex service code for a specific service."
 	@echo "  kitex-update-%    : Update Kitex generated code for a specific service."
 	@echo "  hertz-gen-api     : Generate Hertz scaffold based on the API IDL."
+	@echo "  frontend          : Build and start the frontend service."
 	@echo "  test              : Run unit tests for the project."
 	@echo "  clean             : Remove the 'output' directories and related binaries."
+
+# 构建所有后端服务
+.PHONY: all
+all:
+	@make user
+	@make gateway
+	@make clinical
+	@make biobank
+	@make epidemiology
+	@make followup
+	@make integration
+
+# 生成所有IDL代码
+.PHONY: gen-code
+gen-code:
+	@echo "$(PREFIX) Generating all IDL code..."
+	@for service in user clinical biobank epidemiology followup integration; do \
+		echo "$(PREFIX) Generating Kitex code for $$service..."; \
+		kitex -module "${MODULE}" -thrift no_default_serdes ${IDL_PATH}/$$service.thrift; \
+		if [ $$? -ne 0 ]; then \
+			echo "$(PREFIX) Failed to generate Kitex code for $$service"; \
+			exit 1; \
+		fi; \
+	done
+	@echo "$(PREFIX) Generating Hertz API code..."
+	@for api in user clinical biobank epidemiology followup integration; do \
+		echo "$(PREFIX) Generating Hertz code for $$api API..."; \
+		hz update -idl ${IDL_PATH}/api/$$api.thrift; \
+		if [ $$? -ne 0 ]; then \
+			echo "$(PREFIX) Failed to generate Hertz code for $$api API"; \
+			exit 1; \
+		fi; \
+	done
+	@go mod tidy
+	@echo "$(PREFIX) All IDL code generated successfully!"
 
 # 启动必要的环境，比如 etcd、mysql
 .PHONY: env-up
@@ -143,3 +181,24 @@ vulncheck:
 .PHONY: tidy
 tidy:
 	go mod tidy
+
+# 前端服务相关命令
+.PHONY: frontend frontend-stop frontend-build
+
+# 启动前端服务
+frontend:
+	@echo "$(PREFIX) Building and starting frontend service..."
+	@cd docker && docker compose up -d frontend
+	@echo "$(PREFIX) Frontend service is running at http://localhost:80"
+
+# 停止前端服务
+frontend-stop:
+	@echo "$(PREFIX) Stopping frontend service..."
+	@cd docker && docker compose stop frontend && docker compose rm -f frontend
+	@echo "$(PREFIX) Frontend service has been stopped"
+
+# 构建前端服务
+frontend-build:
+	@echo "$(PREFIX) Building frontend service..."
+	@cd docker && docker compose build --no-cache frontend
+	@echo "$(PREFIX) Frontend service build completed"

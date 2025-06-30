@@ -26,8 +26,8 @@ import (
 	"github.com/yxrxy/AllergyBase/pkg/errno"
 )
 
-func NewRedisClient(db int) (*redis.Client, error) {
-	client := config.GetRedisClient(db)
+func NewRedisClient() (*redis.Client, error) {
+	client := config.GetRedisClient()
 	_, err := client.Ping(context.TODO()).Result()
 	if err != nil {
 		log.Printf("redis ping failed: %v", err)

@@ -216,7 +216,7 @@ type RegisterResponse struct {
 	// 基本响应信息
 	Base *model.BaseResp `thrift:"Base,1,required" form:"Base,required" json:"Base,required" query:"Base,required"`
 	// 用户ID
-	UserID int64 `thrift:"user_id,2,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
+	UserID int64 `thrift:"user_id,2,required" path:"user_id,required" json:"user_id,required" query:"user_id,required"`
 }
 
 func NewRegisterResponse() *RegisterResponse {
@@ -626,7 +626,7 @@ type LoginResponse struct {
 	// 基本响应信息
 	Base *model.BaseResp `thrift:"Base,1,required" form:"Base,required" json:"Base,required" query:"Base,required"`
 	// 用户ID
-	UserID int64 `thrift:"user_id,2,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
+	UserID int64 `thrift:"user_id,2,required" path:"user_id,required" json:"user_id,required" query:"user_id,required"`
 	// 访问令牌
 	Token string `thrift:"token,3,required" form:"token,required" json:"token,required" query:"token,required"`
 	// 刷新令牌
@@ -938,7 +938,7 @@ func (p *LoginResponse) String() string {
 // 获取用户信息请求
 type UserInfoRequest struct {
 	// 用户ID
-	UserID int64 `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
+	UserID int64 `thrift:"user_id,1,required" path:"user_id,required" json:"user_id,required" query:"user_id,required"`
 }
 
 func NewUserInfoRequest() *UserInfoRequest {
@@ -1710,7 +1710,7 @@ func (p *UploadAvatarResponse) String() string {
 
 // 刷新令牌请求
 type RefreshTokenRequest struct {
-	UserID int64 `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
+	UserID int64 `thrift:"user_id,1,required" path:"user_id,required" json:"user_id,required" query:"user_id,required"`
 }
 
 func NewRefreshTokenRequest() *RefreshTokenRequest {

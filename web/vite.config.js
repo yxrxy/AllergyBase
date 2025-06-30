@@ -15,6 +15,15 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    host: '0.0.0.0',
+    disableHostCheck: true,
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      'jwtpss.demo.natool.cn',
+      '.natool.cn',
+      '192.168.31.200'
+    ],
     proxy: {
       '/api': {
         target: 'http://localhost:8080',

@@ -6,7 +6,6 @@ import (
 	"github.com/yxrxy/AllergyBase/app/user/infrastructure/cache"
 	"github.com/yxrxy/AllergyBase/app/user/infrastructure/mysql"
 	"github.com/yxrxy/AllergyBase/app/user/usecase"
-	"github.com/yxrxy/AllergyBase/config"
 	"github.com/yxrxy/AllergyBase/kitex_gen/user"
 	"github.com/yxrxy/AllergyBase/pkg/base/client"
 )
@@ -17,7 +16,7 @@ func InjectUserHandler() user.UserService {
 		panic(err)
 	}
 
-	re, err := client.NewRedisClient(config.Redis.DB.User)
+	re, err := client.NewRedisClient()
 	if err != nil {
 		panic(err)
 	}

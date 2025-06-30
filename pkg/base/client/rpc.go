@@ -25,6 +25,10 @@ import (
 	"github.com/kitex-contrib/obs-opentelemetry/tracing"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"github.com/yxrxy/AllergyBase/config"
+	"github.com/yxrxy/AllergyBase/kitex_gen/biobank/biobankservice"
+	"github.com/yxrxy/AllergyBase/kitex_gen/clinical/clinicalservice"
+	"github.com/yxrxy/AllergyBase/kitex_gen/epidemiology/epidemiologyservice"
+	"github.com/yxrxy/AllergyBase/kitex_gen/followup/followupservice"
 	"github.com/yxrxy/AllergyBase/kitex_gen/user/userservice"
 )
 
@@ -32,9 +36,10 @@ const (
 	MuxConnection                 = 1
 	KitexClientEndpointInfoFormat = "allergybase.%s.client"
 	UserServiceName               = "UserService"
-	VideoServiceName              = "VideoService"
-	InteractionServiceName        = "InteractionService"
-	SocialServiceName             = "SocialService"
+	BiobankServiceName            = "BiobankService"
+	ClinicalServiceName           = "ClinicalService"
+	EpidemiologyServiceName       = "EpidemiologyService"
+	FollowupServiceName           = "FollowupService"
 )
 
 // 通用的RPC客户端初始化函数
@@ -62,4 +67,20 @@ func initRPCClient[T any](serviceName string, newClientFunc func(string, ...clie
 
 func InitUserRPC() (*userservice.Client, error) {
 	return initRPCClient(UserServiceName, userservice.NewClient)
+}
+
+func InitBiobankRPC() (*biobankservice.Client, error) {
+	return initRPCClient(BiobankServiceName, biobankservice.NewClient)
+}
+
+func InitClinicalRPC() (*clinicalservice.Client, error) {
+	return initRPCClient(ClinicalServiceName, clinicalservice.NewClient)
+}
+
+func InitEpidemiologyRPC() (*epidemiologyservice.Client, error) {
+	return initRPCClient(EpidemiologyServiceName, epidemiologyservice.NewClient)
+}
+
+func InitFollowupRPC() (*followupservice.Client, error) {
+	return initRPCClient(FollowupServiceName, followupservice.NewClient)
 }
