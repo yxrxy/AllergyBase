@@ -3,8 +3,99 @@
 package model
 
 import (
+	"database/sql"
+	"database/sql/driver"
 	"fmt"
 )
+
+type Gender int64
+
+const (
+	Gender_FEMALE Gender = 0
+	Gender_MALE   Gender = 1
+)
+
+func (p Gender) String() string {
+	switch p {
+	case Gender_FEMALE:
+		return "FEMALE"
+	case Gender_MALE:
+		return "MALE"
+	}
+	return "<UNSET>"
+}
+
+func GenderFromString(s string) (Gender, error) {
+	switch s {
+	case "FEMALE":
+		return Gender_FEMALE, nil
+	case "MALE":
+		return Gender_MALE, nil
+	}
+	return Gender(0), fmt.Errorf("not a valid Gender string")
+}
+
+func GenderPtr(v Gender) *Gender { return &v }
+func (p *Gender) Scan(value interface{}) (err error) {
+	var result sql.NullInt64
+	err = result.Scan(value)
+	*p = Gender(result.Int64)
+	return
+}
+
+func (p *Gender) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
+}
+
+type VisitType int64
+
+const (
+	VisitType_OUTPATIENT VisitType = 1
+	VisitType_EMERGENCY  VisitType = 2
+	VisitType_INPATIENT  VisitType = 3
+)
+
+func (p VisitType) String() string {
+	switch p {
+	case VisitType_OUTPATIENT:
+		return "OUTPATIENT"
+	case VisitType_EMERGENCY:
+		return "EMERGENCY"
+	case VisitType_INPATIENT:
+		return "INPATIENT"
+	}
+	return "<UNSET>"
+}
+
+func VisitTypeFromString(s string) (VisitType, error) {
+	switch s {
+	case "OUTPATIENT":
+		return VisitType_OUTPATIENT, nil
+	case "EMERGENCY":
+		return VisitType_EMERGENCY, nil
+	case "INPATIENT":
+		return VisitType_INPATIENT, nil
+	}
+	return VisitType(0), fmt.Errorf("not a valid VisitType string")
+}
+
+func VisitTypePtr(v VisitType) *VisitType { return &v }
+func (p *VisitType) Scan(value interface{}) (err error) {
+	var result sql.NullInt64
+	err = result.Scan(value)
+	*p = VisitType(result.Int64)
+	return
+}
+
+func (p *VisitType) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
+}
 
 type BaseResp struct {
 	Code int64  `thrift:"code,1" frugal:"1,default,i64" json:"code"`
@@ -188,4 +279,1751 @@ var fieldIDToName_User = map[int16]string{
 	8:  "isFollow",
 	9:  "likeCount",
 	10: "videoCount",
+}
+
+type Patient struct {
+	Id                   int64    `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	PatientNo            string   `thrift:"patientNo,2,required" frugal:"2,required,string" json:"patientNo"`
+	Name                 string   `thrift:"name,3,required" frugal:"3,required,string" json:"name"`
+	Gender               Gender   `thrift:"gender,4,required" frugal:"4,required,Gender" json:"gender"`
+	BirthDate            string   `thrift:"birthDate,5,required" frugal:"5,required,string" json:"birthDate"`
+	IdCard               *string  `thrift:"idCard,6,optional" frugal:"6,optional,string" json:"idCard,omitempty"`
+	Phone                *string  `thrift:"phone,7,optional" frugal:"7,optional,string" json:"phone,omitempty"`
+	Address              *string  `thrift:"address,8,optional" frugal:"8,optional,string" json:"address,omitempty"`
+	EmergencyContact     *string  `thrift:"emergencyContact,9,optional" frugal:"9,optional,string" json:"emergencyContact,omitempty"`
+	EmergencyPhone       *string  `thrift:"emergencyPhone,10,optional" frugal:"10,optional,string" json:"emergencyPhone,omitempty"`
+	Height               *float64 `thrift:"height,11,optional" frugal:"11,optional,double" json:"height,omitempty"`
+	Weight               *float64 `thrift:"weight,12,optional" frugal:"12,optional,double" json:"weight,omitempty"`
+	BirthWeight          *float64 `thrift:"birthWeight,13,optional" frugal:"13,optional,double" json:"birthWeight,omitempty"`
+	MedicalInsuranceType *int16   `thrift:"medicalInsuranceType,14,optional" frugal:"14,optional,i16" json:"medicalInsuranceType,omitempty"`
+	MedicalInsuranceNo   *string  `thrift:"medicalInsuranceNo,15,optional" frugal:"15,optional,string" json:"medicalInsuranceNo,omitempty"`
+}
+
+func NewPatient() *Patient {
+	return &Patient{}
+}
+
+func (p *Patient) InitDefault() {
+}
+
+func (p *Patient) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *Patient) GetPatientNo() (v string) {
+	return p.PatientNo
+}
+
+func (p *Patient) GetName() (v string) {
+	return p.Name
+}
+
+func (p *Patient) GetGender() (v Gender) {
+	return p.Gender
+}
+
+func (p *Patient) GetBirthDate() (v string) {
+	return p.BirthDate
+}
+
+var Patient_IdCard_DEFAULT string
+
+func (p *Patient) GetIdCard() (v string) {
+	if !p.IsSetIdCard() {
+		return Patient_IdCard_DEFAULT
+	}
+	return *p.IdCard
+}
+
+var Patient_Phone_DEFAULT string
+
+func (p *Patient) GetPhone() (v string) {
+	if !p.IsSetPhone() {
+		return Patient_Phone_DEFAULT
+	}
+	return *p.Phone
+}
+
+var Patient_Address_DEFAULT string
+
+func (p *Patient) GetAddress() (v string) {
+	if !p.IsSetAddress() {
+		return Patient_Address_DEFAULT
+	}
+	return *p.Address
+}
+
+var Patient_EmergencyContact_DEFAULT string
+
+func (p *Patient) GetEmergencyContact() (v string) {
+	if !p.IsSetEmergencyContact() {
+		return Patient_EmergencyContact_DEFAULT
+	}
+	return *p.EmergencyContact
+}
+
+var Patient_EmergencyPhone_DEFAULT string
+
+func (p *Patient) GetEmergencyPhone() (v string) {
+	if !p.IsSetEmergencyPhone() {
+		return Patient_EmergencyPhone_DEFAULT
+	}
+	return *p.EmergencyPhone
+}
+
+var Patient_Height_DEFAULT float64
+
+func (p *Patient) GetHeight() (v float64) {
+	if !p.IsSetHeight() {
+		return Patient_Height_DEFAULT
+	}
+	return *p.Height
+}
+
+var Patient_Weight_DEFAULT float64
+
+func (p *Patient) GetWeight() (v float64) {
+	if !p.IsSetWeight() {
+		return Patient_Weight_DEFAULT
+	}
+	return *p.Weight
+}
+
+var Patient_BirthWeight_DEFAULT float64
+
+func (p *Patient) GetBirthWeight() (v float64) {
+	if !p.IsSetBirthWeight() {
+		return Patient_BirthWeight_DEFAULT
+	}
+	return *p.BirthWeight
+}
+
+var Patient_MedicalInsuranceType_DEFAULT int16
+
+func (p *Patient) GetMedicalInsuranceType() (v int16) {
+	if !p.IsSetMedicalInsuranceType() {
+		return Patient_MedicalInsuranceType_DEFAULT
+	}
+	return *p.MedicalInsuranceType
+}
+
+var Patient_MedicalInsuranceNo_DEFAULT string
+
+func (p *Patient) GetMedicalInsuranceNo() (v string) {
+	if !p.IsSetMedicalInsuranceNo() {
+		return Patient_MedicalInsuranceNo_DEFAULT
+	}
+	return *p.MedicalInsuranceNo
+}
+func (p *Patient) SetId(val int64) {
+	p.Id = val
+}
+func (p *Patient) SetPatientNo(val string) {
+	p.PatientNo = val
+}
+func (p *Patient) SetName(val string) {
+	p.Name = val
+}
+func (p *Patient) SetGender(val Gender) {
+	p.Gender = val
+}
+func (p *Patient) SetBirthDate(val string) {
+	p.BirthDate = val
+}
+func (p *Patient) SetIdCard(val *string) {
+	p.IdCard = val
+}
+func (p *Patient) SetPhone(val *string) {
+	p.Phone = val
+}
+func (p *Patient) SetAddress(val *string) {
+	p.Address = val
+}
+func (p *Patient) SetEmergencyContact(val *string) {
+	p.EmergencyContact = val
+}
+func (p *Patient) SetEmergencyPhone(val *string) {
+	p.EmergencyPhone = val
+}
+func (p *Patient) SetHeight(val *float64) {
+	p.Height = val
+}
+func (p *Patient) SetWeight(val *float64) {
+	p.Weight = val
+}
+func (p *Patient) SetBirthWeight(val *float64) {
+	p.BirthWeight = val
+}
+func (p *Patient) SetMedicalInsuranceType(val *int16) {
+	p.MedicalInsuranceType = val
+}
+func (p *Patient) SetMedicalInsuranceNo(val *string) {
+	p.MedicalInsuranceNo = val
+}
+
+func (p *Patient) IsSetIdCard() bool {
+	return p.IdCard != nil
+}
+
+func (p *Patient) IsSetPhone() bool {
+	return p.Phone != nil
+}
+
+func (p *Patient) IsSetAddress() bool {
+	return p.Address != nil
+}
+
+func (p *Patient) IsSetEmergencyContact() bool {
+	return p.EmergencyContact != nil
+}
+
+func (p *Patient) IsSetEmergencyPhone() bool {
+	return p.EmergencyPhone != nil
+}
+
+func (p *Patient) IsSetHeight() bool {
+	return p.Height != nil
+}
+
+func (p *Patient) IsSetWeight() bool {
+	return p.Weight != nil
+}
+
+func (p *Patient) IsSetBirthWeight() bool {
+	return p.BirthWeight != nil
+}
+
+func (p *Patient) IsSetMedicalInsuranceType() bool {
+	return p.MedicalInsuranceType != nil
+}
+
+func (p *Patient) IsSetMedicalInsuranceNo() bool {
+	return p.MedicalInsuranceNo != nil
+}
+
+func (p *Patient) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Patient(%+v)", *p)
+}
+
+var fieldIDToName_Patient = map[int16]string{
+	1:  "id",
+	2:  "patientNo",
+	3:  "name",
+	4:  "gender",
+	5:  "birthDate",
+	6:  "idCard",
+	7:  "phone",
+	8:  "address",
+	9:  "emergencyContact",
+	10: "emergencyPhone",
+	11: "height",
+	12: "weight",
+	13: "birthWeight",
+	14: "medicalInsuranceType",
+	15: "medicalInsuranceNo",
+}
+
+type Visit struct {
+	Id             int64     `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	PatientId      int64     `thrift:"patientId,2,required" frugal:"2,required,i64" json:"patientId"`
+	VisitNo        string    `thrift:"visitNo,3,required" frugal:"3,required,string" json:"visitNo"`
+	VisitTime      string    `thrift:"visitTime,4,required" frugal:"4,required,string" json:"visitTime"`
+	Department     *string   `thrift:"department,5,optional" frugal:"5,optional,string" json:"department,omitempty"`
+	VisitType      VisitType `thrift:"visitType,6,required" frugal:"6,required,VisitType" json:"visitType"`
+	DoctorId       *int64    `thrift:"doctorId,7,optional" frugal:"7,optional,i64" json:"doctorId,omitempty"`
+	ChiefComplaint *string   `thrift:"chiefComplaint,8,optional" frugal:"8,optional,string" json:"chiefComplaint,omitempty"`
+}
+
+func NewVisit() *Visit {
+	return &Visit{}
+}
+
+func (p *Visit) InitDefault() {
+}
+
+func (p *Visit) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *Visit) GetPatientId() (v int64) {
+	return p.PatientId
+}
+
+func (p *Visit) GetVisitNo() (v string) {
+	return p.VisitNo
+}
+
+func (p *Visit) GetVisitTime() (v string) {
+	return p.VisitTime
+}
+
+var Visit_Department_DEFAULT string
+
+func (p *Visit) GetDepartment() (v string) {
+	if !p.IsSetDepartment() {
+		return Visit_Department_DEFAULT
+	}
+	return *p.Department
+}
+
+func (p *Visit) GetVisitType() (v VisitType) {
+	return p.VisitType
+}
+
+var Visit_DoctorId_DEFAULT int64
+
+func (p *Visit) GetDoctorId() (v int64) {
+	if !p.IsSetDoctorId() {
+		return Visit_DoctorId_DEFAULT
+	}
+	return *p.DoctorId
+}
+
+var Visit_ChiefComplaint_DEFAULT string
+
+func (p *Visit) GetChiefComplaint() (v string) {
+	if !p.IsSetChiefComplaint() {
+		return Visit_ChiefComplaint_DEFAULT
+	}
+	return *p.ChiefComplaint
+}
+func (p *Visit) SetId(val int64) {
+	p.Id = val
+}
+func (p *Visit) SetPatientId(val int64) {
+	p.PatientId = val
+}
+func (p *Visit) SetVisitNo(val string) {
+	p.VisitNo = val
+}
+func (p *Visit) SetVisitTime(val string) {
+	p.VisitTime = val
+}
+func (p *Visit) SetDepartment(val *string) {
+	p.Department = val
+}
+func (p *Visit) SetVisitType(val VisitType) {
+	p.VisitType = val
+}
+func (p *Visit) SetDoctorId(val *int64) {
+	p.DoctorId = val
+}
+func (p *Visit) SetChiefComplaint(val *string) {
+	p.ChiefComplaint = val
+}
+
+func (p *Visit) IsSetDepartment() bool {
+	return p.Department != nil
+}
+
+func (p *Visit) IsSetDoctorId() bool {
+	return p.DoctorId != nil
+}
+
+func (p *Visit) IsSetChiefComplaint() bool {
+	return p.ChiefComplaint != nil
+}
+
+func (p *Visit) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Visit(%+v)", *p)
+}
+
+var fieldIDToName_Visit = map[int16]string{
+	1: "id",
+	2: "patientId",
+	3: "visitNo",
+	4: "visitTime",
+	5: "department",
+	6: "visitType",
+	7: "doctorId",
+	8: "chiefComplaint",
+}
+
+type Diagnosis struct {
+	Id            int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	VisitId       int64   `thrift:"visitId,2,required" frugal:"2,required,i64" json:"visitId"`
+	DiagnosisType *string `thrift:"diagnosisType,3,optional" frugal:"3,optional,string" json:"diagnosisType,omitempty"`
+	IcdCode       *string `thrift:"icdCode,4,optional" frugal:"4,optional,string" json:"icdCode,omitempty"`
+	Severity      *string `thrift:"severity,5,optional" frugal:"5,optional,string" json:"severity,omitempty"`
+	DiagnosisTime *string `thrift:"diagnosisTime,6,optional" frugal:"6,optional,string" json:"diagnosisTime,omitempty"`
+}
+
+func NewDiagnosis() *Diagnosis {
+	return &Diagnosis{}
+}
+
+func (p *Diagnosis) InitDefault() {
+}
+
+func (p *Diagnosis) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *Diagnosis) GetVisitId() (v int64) {
+	return p.VisitId
+}
+
+var Diagnosis_DiagnosisType_DEFAULT string
+
+func (p *Diagnosis) GetDiagnosisType() (v string) {
+	if !p.IsSetDiagnosisType() {
+		return Diagnosis_DiagnosisType_DEFAULT
+	}
+	return *p.DiagnosisType
+}
+
+var Diagnosis_IcdCode_DEFAULT string
+
+func (p *Diagnosis) GetIcdCode() (v string) {
+	if !p.IsSetIcdCode() {
+		return Diagnosis_IcdCode_DEFAULT
+	}
+	return *p.IcdCode
+}
+
+var Diagnosis_Severity_DEFAULT string
+
+func (p *Diagnosis) GetSeverity() (v string) {
+	if !p.IsSetSeverity() {
+		return Diagnosis_Severity_DEFAULT
+	}
+	return *p.Severity
+}
+
+var Diagnosis_DiagnosisTime_DEFAULT string
+
+func (p *Diagnosis) GetDiagnosisTime() (v string) {
+	if !p.IsSetDiagnosisTime() {
+		return Diagnosis_DiagnosisTime_DEFAULT
+	}
+	return *p.DiagnosisTime
+}
+func (p *Diagnosis) SetId(val int64) {
+	p.Id = val
+}
+func (p *Diagnosis) SetVisitId(val int64) {
+	p.VisitId = val
+}
+func (p *Diagnosis) SetDiagnosisType(val *string) {
+	p.DiagnosisType = val
+}
+func (p *Diagnosis) SetIcdCode(val *string) {
+	p.IcdCode = val
+}
+func (p *Diagnosis) SetSeverity(val *string) {
+	p.Severity = val
+}
+func (p *Diagnosis) SetDiagnosisTime(val *string) {
+	p.DiagnosisTime = val
+}
+
+func (p *Diagnosis) IsSetDiagnosisType() bool {
+	return p.DiagnosisType != nil
+}
+
+func (p *Diagnosis) IsSetIcdCode() bool {
+	return p.IcdCode != nil
+}
+
+func (p *Diagnosis) IsSetSeverity() bool {
+	return p.Severity != nil
+}
+
+func (p *Diagnosis) IsSetDiagnosisTime() bool {
+	return p.DiagnosisTime != nil
+}
+
+func (p *Diagnosis) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Diagnosis(%+v)", *p)
+}
+
+var fieldIDToName_Diagnosis = map[int16]string{
+	1: "id",
+	2: "visitId",
+	3: "diagnosisType",
+	4: "icdCode",
+	5: "severity",
+	6: "diagnosisTime",
+}
+
+type Examination struct {
+	Id             int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	VisitId        int64   `thrift:"visitId,2,required" frugal:"2,required,i64" json:"visitId"`
+	ExamType       *string `thrift:"examType,3,optional" frugal:"3,optional,string" json:"examType,omitempty"`
+	ExamTime       *string `thrift:"examTime,4,optional" frugal:"4,optional,string" json:"examTime,omitempty"`
+	ExamResult_    *string `thrift:"examResult,5,optional" frugal:"5,optional,string" json:"examResult,omitempty"`
+	ResultUnit     *string `thrift:"resultUnit,6,optional" frugal:"6,optional,string" json:"resultUnit,omitempty"`
+	ReferenceRange *string `thrift:"referenceRange,7,optional" frugal:"7,optional,string" json:"referenceRange,omitempty"`
+}
+
+func NewExamination() *Examination {
+	return &Examination{}
+}
+
+func (p *Examination) InitDefault() {
+}
+
+func (p *Examination) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *Examination) GetVisitId() (v int64) {
+	return p.VisitId
+}
+
+var Examination_ExamType_DEFAULT string
+
+func (p *Examination) GetExamType() (v string) {
+	if !p.IsSetExamType() {
+		return Examination_ExamType_DEFAULT
+	}
+	return *p.ExamType
+}
+
+var Examination_ExamTime_DEFAULT string
+
+func (p *Examination) GetExamTime() (v string) {
+	if !p.IsSetExamTime() {
+		return Examination_ExamTime_DEFAULT
+	}
+	return *p.ExamTime
+}
+
+var Examination_ExamResult__DEFAULT string
+
+func (p *Examination) GetExamResult_() (v string) {
+	if !p.IsSetExamResult_() {
+		return Examination_ExamResult__DEFAULT
+	}
+	return *p.ExamResult_
+}
+
+var Examination_ResultUnit_DEFAULT string
+
+func (p *Examination) GetResultUnit() (v string) {
+	if !p.IsSetResultUnit() {
+		return Examination_ResultUnit_DEFAULT
+	}
+	return *p.ResultUnit
+}
+
+var Examination_ReferenceRange_DEFAULT string
+
+func (p *Examination) GetReferenceRange() (v string) {
+	if !p.IsSetReferenceRange() {
+		return Examination_ReferenceRange_DEFAULT
+	}
+	return *p.ReferenceRange
+}
+func (p *Examination) SetId(val int64) {
+	p.Id = val
+}
+func (p *Examination) SetVisitId(val int64) {
+	p.VisitId = val
+}
+func (p *Examination) SetExamType(val *string) {
+	p.ExamType = val
+}
+func (p *Examination) SetExamTime(val *string) {
+	p.ExamTime = val
+}
+func (p *Examination) SetExamResult_(val *string) {
+	p.ExamResult_ = val
+}
+func (p *Examination) SetResultUnit(val *string) {
+	p.ResultUnit = val
+}
+func (p *Examination) SetReferenceRange(val *string) {
+	p.ReferenceRange = val
+}
+
+func (p *Examination) IsSetExamType() bool {
+	return p.ExamType != nil
+}
+
+func (p *Examination) IsSetExamTime() bool {
+	return p.ExamTime != nil
+}
+
+func (p *Examination) IsSetExamResult_() bool {
+	return p.ExamResult_ != nil
+}
+
+func (p *Examination) IsSetResultUnit() bool {
+	return p.ResultUnit != nil
+}
+
+func (p *Examination) IsSetReferenceRange() bool {
+	return p.ReferenceRange != nil
+}
+
+func (p *Examination) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Examination(%+v)", *p)
+}
+
+var fieldIDToName_Examination = map[int16]string{
+	1: "id",
+	2: "visitId",
+	3: "examType",
+	4: "examTime",
+	5: "examResult",
+	6: "resultUnit",
+	7: "referenceRange",
+}
+
+type EnvironmentExposure struct {
+	Id                   int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	PatientId            int64   `thrift:"patientId,2,required" frugal:"2,required,i64" json:"patientId"`
+	ResidenceType        *string `thrift:"residenceType,3,optional" frugal:"3,optional,string" json:"residenceType,omitempty"`
+	BuildingMaterial     *string `thrift:"buildingMaterial,4,optional" frugal:"4,optional,string" json:"buildingMaterial,omitempty"`
+	VentilationFrequency *string `thrift:"ventilationFrequency,5,optional" frugal:"5,optional,string" json:"ventilationFrequency,omitempty"`
+	AirConditioningUsage *string `thrift:"airConditioningUsage,6,optional" frugal:"6,optional,string" json:"airConditioningUsage,omitempty"`
+	PetExposure          *bool   `thrift:"petExposure,7,optional" frugal:"7,optional,bool" json:"petExposure,omitempty"`
+	SmokingExposure      *bool   `thrift:"smokingExposure,8,optional" frugal:"8,optional,bool" json:"smokingExposure,omitempty"`
+}
+
+func NewEnvironmentExposure() *EnvironmentExposure {
+	return &EnvironmentExposure{}
+}
+
+func (p *EnvironmentExposure) InitDefault() {
+}
+
+func (p *EnvironmentExposure) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *EnvironmentExposure) GetPatientId() (v int64) {
+	return p.PatientId
+}
+
+var EnvironmentExposure_ResidenceType_DEFAULT string
+
+func (p *EnvironmentExposure) GetResidenceType() (v string) {
+	if !p.IsSetResidenceType() {
+		return EnvironmentExposure_ResidenceType_DEFAULT
+	}
+	return *p.ResidenceType
+}
+
+var EnvironmentExposure_BuildingMaterial_DEFAULT string
+
+func (p *EnvironmentExposure) GetBuildingMaterial() (v string) {
+	if !p.IsSetBuildingMaterial() {
+		return EnvironmentExposure_BuildingMaterial_DEFAULT
+	}
+	return *p.BuildingMaterial
+}
+
+var EnvironmentExposure_VentilationFrequency_DEFAULT string
+
+func (p *EnvironmentExposure) GetVentilationFrequency() (v string) {
+	if !p.IsSetVentilationFrequency() {
+		return EnvironmentExposure_VentilationFrequency_DEFAULT
+	}
+	return *p.VentilationFrequency
+}
+
+var EnvironmentExposure_AirConditioningUsage_DEFAULT string
+
+func (p *EnvironmentExposure) GetAirConditioningUsage() (v string) {
+	if !p.IsSetAirConditioningUsage() {
+		return EnvironmentExposure_AirConditioningUsage_DEFAULT
+	}
+	return *p.AirConditioningUsage
+}
+
+var EnvironmentExposure_PetExposure_DEFAULT bool
+
+func (p *EnvironmentExposure) GetPetExposure() (v bool) {
+	if !p.IsSetPetExposure() {
+		return EnvironmentExposure_PetExposure_DEFAULT
+	}
+	return *p.PetExposure
+}
+
+var EnvironmentExposure_SmokingExposure_DEFAULT bool
+
+func (p *EnvironmentExposure) GetSmokingExposure() (v bool) {
+	if !p.IsSetSmokingExposure() {
+		return EnvironmentExposure_SmokingExposure_DEFAULT
+	}
+	return *p.SmokingExposure
+}
+func (p *EnvironmentExposure) SetId(val int64) {
+	p.Id = val
+}
+func (p *EnvironmentExposure) SetPatientId(val int64) {
+	p.PatientId = val
+}
+func (p *EnvironmentExposure) SetResidenceType(val *string) {
+	p.ResidenceType = val
+}
+func (p *EnvironmentExposure) SetBuildingMaterial(val *string) {
+	p.BuildingMaterial = val
+}
+func (p *EnvironmentExposure) SetVentilationFrequency(val *string) {
+	p.VentilationFrequency = val
+}
+func (p *EnvironmentExposure) SetAirConditioningUsage(val *string) {
+	p.AirConditioningUsage = val
+}
+func (p *EnvironmentExposure) SetPetExposure(val *bool) {
+	p.PetExposure = val
+}
+func (p *EnvironmentExposure) SetSmokingExposure(val *bool) {
+	p.SmokingExposure = val
+}
+
+func (p *EnvironmentExposure) IsSetResidenceType() bool {
+	return p.ResidenceType != nil
+}
+
+func (p *EnvironmentExposure) IsSetBuildingMaterial() bool {
+	return p.BuildingMaterial != nil
+}
+
+func (p *EnvironmentExposure) IsSetVentilationFrequency() bool {
+	return p.VentilationFrequency != nil
+}
+
+func (p *EnvironmentExposure) IsSetAirConditioningUsage() bool {
+	return p.AirConditioningUsage != nil
+}
+
+func (p *EnvironmentExposure) IsSetPetExposure() bool {
+	return p.PetExposure != nil
+}
+
+func (p *EnvironmentExposure) IsSetSmokingExposure() bool {
+	return p.SmokingExposure != nil
+}
+
+func (p *EnvironmentExposure) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("EnvironmentExposure(%+v)", *p)
+}
+
+var fieldIDToName_EnvironmentExposure = map[int16]string{
+	1: "id",
+	2: "patientId",
+	3: "residenceType",
+	4: "buildingMaterial",
+	5: "ventilationFrequency",
+	6: "airConditioningUsage",
+	7: "petExposure",
+	8: "smokingExposure",
+}
+
+type EnvironmentMonitor struct {
+	Id                  int64    `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	LocationCode        string   `thrift:"locationCode,2,required" frugal:"2,required,string" json:"locationCode"`
+	MonitorTime         string   `thrift:"monitorTime,3,required" frugal:"3,required,string" json:"monitorTime"`
+	Pm25                *float64 `thrift:"pm25,4,optional" frugal:"4,optional,double" json:"pm25,omitempty"`
+	Temperature         *float64 `thrift:"temperature,5,optional" frugal:"5,optional,double" json:"temperature,omitempty"`
+	Humidity            *float64 `thrift:"humidity,6,optional" frugal:"6,optional,double" json:"humidity,omitempty"`
+	PollenConcentration *float64 `thrift:"pollenConcentration,7,optional" frugal:"7,optional,double" json:"pollenConcentration,omitempty"`
+	AllergenLevel       *string  `thrift:"allergenLevel,8,optional" frugal:"8,optional,string" json:"allergenLevel,omitempty"`
+}
+
+func NewEnvironmentMonitor() *EnvironmentMonitor {
+	return &EnvironmentMonitor{}
+}
+
+func (p *EnvironmentMonitor) InitDefault() {
+}
+
+func (p *EnvironmentMonitor) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *EnvironmentMonitor) GetLocationCode() (v string) {
+	return p.LocationCode
+}
+
+func (p *EnvironmentMonitor) GetMonitorTime() (v string) {
+	return p.MonitorTime
+}
+
+var EnvironmentMonitor_Pm25_DEFAULT float64
+
+func (p *EnvironmentMonitor) GetPm25() (v float64) {
+	if !p.IsSetPm25() {
+		return EnvironmentMonitor_Pm25_DEFAULT
+	}
+	return *p.Pm25
+}
+
+var EnvironmentMonitor_Temperature_DEFAULT float64
+
+func (p *EnvironmentMonitor) GetTemperature() (v float64) {
+	if !p.IsSetTemperature() {
+		return EnvironmentMonitor_Temperature_DEFAULT
+	}
+	return *p.Temperature
+}
+
+var EnvironmentMonitor_Humidity_DEFAULT float64
+
+func (p *EnvironmentMonitor) GetHumidity() (v float64) {
+	if !p.IsSetHumidity() {
+		return EnvironmentMonitor_Humidity_DEFAULT
+	}
+	return *p.Humidity
+}
+
+var EnvironmentMonitor_PollenConcentration_DEFAULT float64
+
+func (p *EnvironmentMonitor) GetPollenConcentration() (v float64) {
+	if !p.IsSetPollenConcentration() {
+		return EnvironmentMonitor_PollenConcentration_DEFAULT
+	}
+	return *p.PollenConcentration
+}
+
+var EnvironmentMonitor_AllergenLevel_DEFAULT string
+
+func (p *EnvironmentMonitor) GetAllergenLevel() (v string) {
+	if !p.IsSetAllergenLevel() {
+		return EnvironmentMonitor_AllergenLevel_DEFAULT
+	}
+	return *p.AllergenLevel
+}
+func (p *EnvironmentMonitor) SetId(val int64) {
+	p.Id = val
+}
+func (p *EnvironmentMonitor) SetLocationCode(val string) {
+	p.LocationCode = val
+}
+func (p *EnvironmentMonitor) SetMonitorTime(val string) {
+	p.MonitorTime = val
+}
+func (p *EnvironmentMonitor) SetPm25(val *float64) {
+	p.Pm25 = val
+}
+func (p *EnvironmentMonitor) SetTemperature(val *float64) {
+	p.Temperature = val
+}
+func (p *EnvironmentMonitor) SetHumidity(val *float64) {
+	p.Humidity = val
+}
+func (p *EnvironmentMonitor) SetPollenConcentration(val *float64) {
+	p.PollenConcentration = val
+}
+func (p *EnvironmentMonitor) SetAllergenLevel(val *string) {
+	p.AllergenLevel = val
+}
+
+func (p *EnvironmentMonitor) IsSetPm25() bool {
+	return p.Pm25 != nil
+}
+
+func (p *EnvironmentMonitor) IsSetTemperature() bool {
+	return p.Temperature != nil
+}
+
+func (p *EnvironmentMonitor) IsSetHumidity() bool {
+	return p.Humidity != nil
+}
+
+func (p *EnvironmentMonitor) IsSetPollenConcentration() bool {
+	return p.PollenConcentration != nil
+}
+
+func (p *EnvironmentMonitor) IsSetAllergenLevel() bool {
+	return p.AllergenLevel != nil
+}
+
+func (p *EnvironmentMonitor) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("EnvironmentMonitor(%+v)", *p)
+}
+
+var fieldIDToName_EnvironmentMonitor = map[int16]string{
+	1: "id",
+	2: "locationCode",
+	3: "monitorTime",
+	4: "pm25",
+	5: "temperature",
+	6: "humidity",
+	7: "pollenConcentration",
+	8: "allergenLevel",
+}
+
+type LifestyleSurvey struct {
+	Id                int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	PatientId         int64   `thrift:"patientId,2,required" frugal:"2,required,i64" json:"patientId"`
+	DietPattern       *string `thrift:"dietPattern,3,optional" frugal:"3,optional,string" json:"dietPattern,omitempty"`
+	ExerciseFrequency *string `thrift:"exerciseFrequency,4,optional" frugal:"4,optional,string" json:"exerciseFrequency,omitempty"`
+	SleepQuality      *string `thrift:"sleepQuality,5,optional" frugal:"5,optional,string" json:"sleepQuality,omitempty"`
+	StressLevel       *string `thrift:"stressLevel,6,optional" frugal:"6,optional,string" json:"stressLevel,omitempty"`
+}
+
+func NewLifestyleSurvey() *LifestyleSurvey {
+	return &LifestyleSurvey{}
+}
+
+func (p *LifestyleSurvey) InitDefault() {
+}
+
+func (p *LifestyleSurvey) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *LifestyleSurvey) GetPatientId() (v int64) {
+	return p.PatientId
+}
+
+var LifestyleSurvey_DietPattern_DEFAULT string
+
+func (p *LifestyleSurvey) GetDietPattern() (v string) {
+	if !p.IsSetDietPattern() {
+		return LifestyleSurvey_DietPattern_DEFAULT
+	}
+	return *p.DietPattern
+}
+
+var LifestyleSurvey_ExerciseFrequency_DEFAULT string
+
+func (p *LifestyleSurvey) GetExerciseFrequency() (v string) {
+	if !p.IsSetExerciseFrequency() {
+		return LifestyleSurvey_ExerciseFrequency_DEFAULT
+	}
+	return *p.ExerciseFrequency
+}
+
+var LifestyleSurvey_SleepQuality_DEFAULT string
+
+func (p *LifestyleSurvey) GetSleepQuality() (v string) {
+	if !p.IsSetSleepQuality() {
+		return LifestyleSurvey_SleepQuality_DEFAULT
+	}
+	return *p.SleepQuality
+}
+
+var LifestyleSurvey_StressLevel_DEFAULT string
+
+func (p *LifestyleSurvey) GetStressLevel() (v string) {
+	if !p.IsSetStressLevel() {
+		return LifestyleSurvey_StressLevel_DEFAULT
+	}
+	return *p.StressLevel
+}
+func (p *LifestyleSurvey) SetId(val int64) {
+	p.Id = val
+}
+func (p *LifestyleSurvey) SetPatientId(val int64) {
+	p.PatientId = val
+}
+func (p *LifestyleSurvey) SetDietPattern(val *string) {
+	p.DietPattern = val
+}
+func (p *LifestyleSurvey) SetExerciseFrequency(val *string) {
+	p.ExerciseFrequency = val
+}
+func (p *LifestyleSurvey) SetSleepQuality(val *string) {
+	p.SleepQuality = val
+}
+func (p *LifestyleSurvey) SetStressLevel(val *string) {
+	p.StressLevel = val
+}
+
+func (p *LifestyleSurvey) IsSetDietPattern() bool {
+	return p.DietPattern != nil
+}
+
+func (p *LifestyleSurvey) IsSetExerciseFrequency() bool {
+	return p.ExerciseFrequency != nil
+}
+
+func (p *LifestyleSurvey) IsSetSleepQuality() bool {
+	return p.SleepQuality != nil
+}
+
+func (p *LifestyleSurvey) IsSetStressLevel() bool {
+	return p.StressLevel != nil
+}
+
+func (p *LifestyleSurvey) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LifestyleSurvey(%+v)", *p)
+}
+
+var fieldIDToName_LifestyleSurvey = map[int16]string{
+	1: "id",
+	2: "patientId",
+	3: "dietPattern",
+	4: "exerciseFrequency",
+	5: "sleepQuality",
+	6: "stressLevel",
+}
+
+type FollowupPlan struct {
+	Id                  int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	PatientId           int64   `thrift:"patientId,2,required" frugal:"2,required,i64" json:"patientId"`
+	PlanStartDate       string  `thrift:"planStartDate,3,required" frugal:"3,required,string" json:"planStartDate"`
+	FollowupFrequency   *string `thrift:"followupFrequency,4,optional" frugal:"4,optional,string" json:"followupFrequency,omitempty"`
+	FollowupMethod      *string `thrift:"followupMethod,5,optional" frugal:"5,optional,string" json:"followupMethod,omitempty"`
+	ResponsibleDoctorId *int64  `thrift:"responsibleDoctorId,6,optional" frugal:"6,optional,i64" json:"responsibleDoctorId,omitempty"`
+}
+
+func NewFollowupPlan() *FollowupPlan {
+	return &FollowupPlan{}
+}
+
+func (p *FollowupPlan) InitDefault() {
+}
+
+func (p *FollowupPlan) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *FollowupPlan) GetPatientId() (v int64) {
+	return p.PatientId
+}
+
+func (p *FollowupPlan) GetPlanStartDate() (v string) {
+	return p.PlanStartDate
+}
+
+var FollowupPlan_FollowupFrequency_DEFAULT string
+
+func (p *FollowupPlan) GetFollowupFrequency() (v string) {
+	if !p.IsSetFollowupFrequency() {
+		return FollowupPlan_FollowupFrequency_DEFAULT
+	}
+	return *p.FollowupFrequency
+}
+
+var FollowupPlan_FollowupMethod_DEFAULT string
+
+func (p *FollowupPlan) GetFollowupMethod() (v string) {
+	if !p.IsSetFollowupMethod() {
+		return FollowupPlan_FollowupMethod_DEFAULT
+	}
+	return *p.FollowupMethod
+}
+
+var FollowupPlan_ResponsibleDoctorId_DEFAULT int64
+
+func (p *FollowupPlan) GetResponsibleDoctorId() (v int64) {
+	if !p.IsSetResponsibleDoctorId() {
+		return FollowupPlan_ResponsibleDoctorId_DEFAULT
+	}
+	return *p.ResponsibleDoctorId
+}
+func (p *FollowupPlan) SetId(val int64) {
+	p.Id = val
+}
+func (p *FollowupPlan) SetPatientId(val int64) {
+	p.PatientId = val
+}
+func (p *FollowupPlan) SetPlanStartDate(val string) {
+	p.PlanStartDate = val
+}
+func (p *FollowupPlan) SetFollowupFrequency(val *string) {
+	p.FollowupFrequency = val
+}
+func (p *FollowupPlan) SetFollowupMethod(val *string) {
+	p.FollowupMethod = val
+}
+func (p *FollowupPlan) SetResponsibleDoctorId(val *int64) {
+	p.ResponsibleDoctorId = val
+}
+
+func (p *FollowupPlan) IsSetFollowupFrequency() bool {
+	return p.FollowupFrequency != nil
+}
+
+func (p *FollowupPlan) IsSetFollowupMethod() bool {
+	return p.FollowupMethod != nil
+}
+
+func (p *FollowupPlan) IsSetResponsibleDoctorId() bool {
+	return p.ResponsibleDoctorId != nil
+}
+
+func (p *FollowupPlan) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("FollowupPlan(%+v)", *p)
+}
+
+var fieldIDToName_FollowupPlan = map[int16]string{
+	1: "id",
+	2: "patientId",
+	3: "planStartDate",
+	4: "followupFrequency",
+	5: "followupMethod",
+	6: "responsibleDoctorId",
+}
+
+type FollowupRecord struct {
+	Id                   int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	PlanId               int64   `thrift:"planId,2,required" frugal:"2,required,i64" json:"planId"`
+	FollowupDate         string  `thrift:"followupDate,3,required" frugal:"3,required,string" json:"followupDate"`
+	SymptomScore         *int32  `thrift:"symptomScore,4,optional" frugal:"4,optional,i32" json:"symptomScore,omitempty"`
+	MedicationCompliance *string `thrift:"medicationCompliance,5,optional" frugal:"5,optional,string" json:"medicationCompliance,omitempty"`
+	SideEffects          *string `thrift:"sideEffects,6,optional" frugal:"6,optional,string" json:"sideEffects,omitempty"`
+	QualityOfLifeScore   *int32  `thrift:"qualityOfLifeScore,7,optional" frugal:"7,optional,i32" json:"qualityOfLifeScore,omitempty"`
+}
+
+func NewFollowupRecord() *FollowupRecord {
+	return &FollowupRecord{}
+}
+
+func (p *FollowupRecord) InitDefault() {
+}
+
+func (p *FollowupRecord) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *FollowupRecord) GetPlanId() (v int64) {
+	return p.PlanId
+}
+
+func (p *FollowupRecord) GetFollowupDate() (v string) {
+	return p.FollowupDate
+}
+
+var FollowupRecord_SymptomScore_DEFAULT int32
+
+func (p *FollowupRecord) GetSymptomScore() (v int32) {
+	if !p.IsSetSymptomScore() {
+		return FollowupRecord_SymptomScore_DEFAULT
+	}
+	return *p.SymptomScore
+}
+
+var FollowupRecord_MedicationCompliance_DEFAULT string
+
+func (p *FollowupRecord) GetMedicationCompliance() (v string) {
+	if !p.IsSetMedicationCompliance() {
+		return FollowupRecord_MedicationCompliance_DEFAULT
+	}
+	return *p.MedicationCompliance
+}
+
+var FollowupRecord_SideEffects_DEFAULT string
+
+func (p *FollowupRecord) GetSideEffects() (v string) {
+	if !p.IsSetSideEffects() {
+		return FollowupRecord_SideEffects_DEFAULT
+	}
+	return *p.SideEffects
+}
+
+var FollowupRecord_QualityOfLifeScore_DEFAULT int32
+
+func (p *FollowupRecord) GetQualityOfLifeScore() (v int32) {
+	if !p.IsSetQualityOfLifeScore() {
+		return FollowupRecord_QualityOfLifeScore_DEFAULT
+	}
+	return *p.QualityOfLifeScore
+}
+func (p *FollowupRecord) SetId(val int64) {
+	p.Id = val
+}
+func (p *FollowupRecord) SetPlanId(val int64) {
+	p.PlanId = val
+}
+func (p *FollowupRecord) SetFollowupDate(val string) {
+	p.FollowupDate = val
+}
+func (p *FollowupRecord) SetSymptomScore(val *int32) {
+	p.SymptomScore = val
+}
+func (p *FollowupRecord) SetMedicationCompliance(val *string) {
+	p.MedicationCompliance = val
+}
+func (p *FollowupRecord) SetSideEffects(val *string) {
+	p.SideEffects = val
+}
+func (p *FollowupRecord) SetQualityOfLifeScore(val *int32) {
+	p.QualityOfLifeScore = val
+}
+
+func (p *FollowupRecord) IsSetSymptomScore() bool {
+	return p.SymptomScore != nil
+}
+
+func (p *FollowupRecord) IsSetMedicationCompliance() bool {
+	return p.MedicationCompliance != nil
+}
+
+func (p *FollowupRecord) IsSetSideEffects() bool {
+	return p.SideEffects != nil
+}
+
+func (p *FollowupRecord) IsSetQualityOfLifeScore() bool {
+	return p.QualityOfLifeScore != nil
+}
+
+func (p *FollowupRecord) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("FollowupRecord(%+v)", *p)
+}
+
+var fieldIDToName_FollowupRecord = map[int16]string{
+	1: "id",
+	2: "planId",
+	3: "followupDate",
+	4: "symptomScore",
+	5: "medicationCompliance",
+	6: "sideEffects",
+	7: "qualityOfLifeScore",
+}
+
+type MedicationMonitor struct {
+	Id              int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	FollowupId      int64   `thrift:"followupId,2,required" frugal:"2,required,i64" json:"followupId"`
+	DrugName        string  `thrift:"drugName,3,required" frugal:"3,required,string" json:"drugName"`
+	UsageFrequency  *string `thrift:"usageFrequency,4,optional" frugal:"4,optional,string" json:"usageFrequency,omitempty"`
+	ComplianceLevel *string `thrift:"complianceLevel,5,optional" frugal:"5,optional,string" json:"complianceLevel,omitempty"`
+	Effectiveness   *string `thrift:"effectiveness,6,optional" frugal:"6,optional,string" json:"effectiveness,omitempty"`
+}
+
+func NewMedicationMonitor() *MedicationMonitor {
+	return &MedicationMonitor{}
+}
+
+func (p *MedicationMonitor) InitDefault() {
+}
+
+func (p *MedicationMonitor) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *MedicationMonitor) GetFollowupId() (v int64) {
+	return p.FollowupId
+}
+
+func (p *MedicationMonitor) GetDrugName() (v string) {
+	return p.DrugName
+}
+
+var MedicationMonitor_UsageFrequency_DEFAULT string
+
+func (p *MedicationMonitor) GetUsageFrequency() (v string) {
+	if !p.IsSetUsageFrequency() {
+		return MedicationMonitor_UsageFrequency_DEFAULT
+	}
+	return *p.UsageFrequency
+}
+
+var MedicationMonitor_ComplianceLevel_DEFAULT string
+
+func (p *MedicationMonitor) GetComplianceLevel() (v string) {
+	if !p.IsSetComplianceLevel() {
+		return MedicationMonitor_ComplianceLevel_DEFAULT
+	}
+	return *p.ComplianceLevel
+}
+
+var MedicationMonitor_Effectiveness_DEFAULT string
+
+func (p *MedicationMonitor) GetEffectiveness() (v string) {
+	if !p.IsSetEffectiveness() {
+		return MedicationMonitor_Effectiveness_DEFAULT
+	}
+	return *p.Effectiveness
+}
+func (p *MedicationMonitor) SetId(val int64) {
+	p.Id = val
+}
+func (p *MedicationMonitor) SetFollowupId(val int64) {
+	p.FollowupId = val
+}
+func (p *MedicationMonitor) SetDrugName(val string) {
+	p.DrugName = val
+}
+func (p *MedicationMonitor) SetUsageFrequency(val *string) {
+	p.UsageFrequency = val
+}
+func (p *MedicationMonitor) SetComplianceLevel(val *string) {
+	p.ComplianceLevel = val
+}
+func (p *MedicationMonitor) SetEffectiveness(val *string) {
+	p.Effectiveness = val
+}
+
+func (p *MedicationMonitor) IsSetUsageFrequency() bool {
+	return p.UsageFrequency != nil
+}
+
+func (p *MedicationMonitor) IsSetComplianceLevel() bool {
+	return p.ComplianceLevel != nil
+}
+
+func (p *MedicationMonitor) IsSetEffectiveness() bool {
+	return p.Effectiveness != nil
+}
+
+func (p *MedicationMonitor) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MedicationMonitor(%+v)", *p)
+}
+
+var fieldIDToName_MedicationMonitor = map[int16]string{
+	1: "id",
+	2: "followupId",
+	3: "drugName",
+	4: "usageFrequency",
+	5: "complianceLevel",
+	6: "effectiveness",
+}
+
+type SampleInfo struct {
+	Id               int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	PatientId        int64   `thrift:"patientId,2,required" frugal:"2,required,i64" json:"patientId"`
+	SampleNo         string  `thrift:"sampleNo,3,required" frugal:"3,required,string" json:"sampleNo"`
+	SampleType       *string `thrift:"sampleType,4,optional" frugal:"4,optional,string" json:"sampleType,omitempty"`
+	CollectionTime   *string `thrift:"collectionTime,5,optional" frugal:"5,optional,string" json:"collectionTime,omitempty"`
+	CollectionMethod *string `thrift:"collectionMethod,6,optional" frugal:"6,optional,string" json:"collectionMethod,omitempty"`
+	Processor        *string `thrift:"processor,7,optional" frugal:"7,optional,string" json:"processor,omitempty"`
+}
+
+func NewSampleInfo() *SampleInfo {
+	return &SampleInfo{}
+}
+
+func (p *SampleInfo) InitDefault() {
+}
+
+func (p *SampleInfo) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *SampleInfo) GetPatientId() (v int64) {
+	return p.PatientId
+}
+
+func (p *SampleInfo) GetSampleNo() (v string) {
+	return p.SampleNo
+}
+
+var SampleInfo_SampleType_DEFAULT string
+
+func (p *SampleInfo) GetSampleType() (v string) {
+	if !p.IsSetSampleType() {
+		return SampleInfo_SampleType_DEFAULT
+	}
+	return *p.SampleType
+}
+
+var SampleInfo_CollectionTime_DEFAULT string
+
+func (p *SampleInfo) GetCollectionTime() (v string) {
+	if !p.IsSetCollectionTime() {
+		return SampleInfo_CollectionTime_DEFAULT
+	}
+	return *p.CollectionTime
+}
+
+var SampleInfo_CollectionMethod_DEFAULT string
+
+func (p *SampleInfo) GetCollectionMethod() (v string) {
+	if !p.IsSetCollectionMethod() {
+		return SampleInfo_CollectionMethod_DEFAULT
+	}
+	return *p.CollectionMethod
+}
+
+var SampleInfo_Processor_DEFAULT string
+
+func (p *SampleInfo) GetProcessor() (v string) {
+	if !p.IsSetProcessor() {
+		return SampleInfo_Processor_DEFAULT
+	}
+	return *p.Processor
+}
+func (p *SampleInfo) SetId(val int64) {
+	p.Id = val
+}
+func (p *SampleInfo) SetPatientId(val int64) {
+	p.PatientId = val
+}
+func (p *SampleInfo) SetSampleNo(val string) {
+	p.SampleNo = val
+}
+func (p *SampleInfo) SetSampleType(val *string) {
+	p.SampleType = val
+}
+func (p *SampleInfo) SetCollectionTime(val *string) {
+	p.CollectionTime = val
+}
+func (p *SampleInfo) SetCollectionMethod(val *string) {
+	p.CollectionMethod = val
+}
+func (p *SampleInfo) SetProcessor(val *string) {
+	p.Processor = val
+}
+
+func (p *SampleInfo) IsSetSampleType() bool {
+	return p.SampleType != nil
+}
+
+func (p *SampleInfo) IsSetCollectionTime() bool {
+	return p.CollectionTime != nil
+}
+
+func (p *SampleInfo) IsSetCollectionMethod() bool {
+	return p.CollectionMethod != nil
+}
+
+func (p *SampleInfo) IsSetProcessor() bool {
+	return p.Processor != nil
+}
+
+func (p *SampleInfo) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SampleInfo(%+v)", *p)
+}
+
+var fieldIDToName_SampleInfo = map[int16]string{
+	1: "id",
+	2: "patientId",
+	3: "sampleNo",
+	4: "sampleType",
+	5: "collectionTime",
+	6: "collectionMethod",
+	7: "processor",
+}
+
+type StorageInfo struct {
+	Id                 int64    `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	SampleId           int64    `thrift:"sampleId,2,required" frugal:"2,required,i64" json:"sampleId"`
+	StorageLocation    *string  `thrift:"storageLocation,3,optional" frugal:"3,optional,string" json:"storageLocation,omitempty"`
+	StorageTemperature *float64 `thrift:"storageTemperature,4,optional" frugal:"4,optional,double" json:"storageTemperature,omitempty"`
+	StorageTime        *string  `thrift:"storageTime,5,optional" frugal:"5,optional,string" json:"storageTime,omitempty"`
+	Status             *string  `thrift:"status,6,optional" frugal:"6,optional,string" json:"status,omitempty"`
+}
+
+func NewStorageInfo() *StorageInfo {
+	return &StorageInfo{}
+}
+
+func (p *StorageInfo) InitDefault() {
+}
+
+func (p *StorageInfo) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *StorageInfo) GetSampleId() (v int64) {
+	return p.SampleId
+}
+
+var StorageInfo_StorageLocation_DEFAULT string
+
+func (p *StorageInfo) GetStorageLocation() (v string) {
+	if !p.IsSetStorageLocation() {
+		return StorageInfo_StorageLocation_DEFAULT
+	}
+	return *p.StorageLocation
+}
+
+var StorageInfo_StorageTemperature_DEFAULT float64
+
+func (p *StorageInfo) GetStorageTemperature() (v float64) {
+	if !p.IsSetStorageTemperature() {
+		return StorageInfo_StorageTemperature_DEFAULT
+	}
+	return *p.StorageTemperature
+}
+
+var StorageInfo_StorageTime_DEFAULT string
+
+func (p *StorageInfo) GetStorageTime() (v string) {
+	if !p.IsSetStorageTime() {
+		return StorageInfo_StorageTime_DEFAULT
+	}
+	return *p.StorageTime
+}
+
+var StorageInfo_Status_DEFAULT string
+
+func (p *StorageInfo) GetStatus() (v string) {
+	if !p.IsSetStatus() {
+		return StorageInfo_Status_DEFAULT
+	}
+	return *p.Status
+}
+func (p *StorageInfo) SetId(val int64) {
+	p.Id = val
+}
+func (p *StorageInfo) SetSampleId(val int64) {
+	p.SampleId = val
+}
+func (p *StorageInfo) SetStorageLocation(val *string) {
+	p.StorageLocation = val
+}
+func (p *StorageInfo) SetStorageTemperature(val *float64) {
+	p.StorageTemperature = val
+}
+func (p *StorageInfo) SetStorageTime(val *string) {
+	p.StorageTime = val
+}
+func (p *StorageInfo) SetStatus(val *string) {
+	p.Status = val
+}
+
+func (p *StorageInfo) IsSetStorageLocation() bool {
+	return p.StorageLocation != nil
+}
+
+func (p *StorageInfo) IsSetStorageTemperature() bool {
+	return p.StorageTemperature != nil
+}
+
+func (p *StorageInfo) IsSetStorageTime() bool {
+	return p.StorageTime != nil
+}
+
+func (p *StorageInfo) IsSetStatus() bool {
+	return p.Status != nil
+}
+
+func (p *StorageInfo) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("StorageInfo(%+v)", *p)
+}
+
+var fieldIDToName_StorageInfo = map[int16]string{
+	1: "id",
+	2: "sampleId",
+	3: "storageLocation",
+	4: "storageTemperature",
+	5: "storageTime",
+	6: "status",
+}
+
+type GenomicData struct {
+	Id               int64   `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	SampleId         int64   `thrift:"sampleId,2,required" frugal:"2,required,i64" json:"sampleId"`
+	SequencePlatform *string `thrift:"sequencePlatform,3,optional" frugal:"3,optional,string" json:"sequencePlatform,omitempty"`
+	SequenceType     *string `thrift:"sequenceType,4,optional" frugal:"4,optional,string" json:"sequenceType,omitempty"`
+	GeneType         *string `thrift:"geneType,5,optional" frugal:"5,optional,string" json:"geneType,omitempty"`
+	ResultFilePath   *string `thrift:"resultFilePath,6,optional" frugal:"6,optional,string" json:"resultFilePath,omitempty"`
+}
+
+func NewGenomicData() *GenomicData {
+	return &GenomicData{}
+}
+
+func (p *GenomicData) InitDefault() {
+}
+
+func (p *GenomicData) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *GenomicData) GetSampleId() (v int64) {
+	return p.SampleId
+}
+
+var GenomicData_SequencePlatform_DEFAULT string
+
+func (p *GenomicData) GetSequencePlatform() (v string) {
+	if !p.IsSetSequencePlatform() {
+		return GenomicData_SequencePlatform_DEFAULT
+	}
+	return *p.SequencePlatform
+}
+
+var GenomicData_SequenceType_DEFAULT string
+
+func (p *GenomicData) GetSequenceType() (v string) {
+	if !p.IsSetSequenceType() {
+		return GenomicData_SequenceType_DEFAULT
+	}
+	return *p.SequenceType
+}
+
+var GenomicData_GeneType_DEFAULT string
+
+func (p *GenomicData) GetGeneType() (v string) {
+	if !p.IsSetGeneType() {
+		return GenomicData_GeneType_DEFAULT
+	}
+	return *p.GeneType
+}
+
+var GenomicData_ResultFilePath_DEFAULT string
+
+func (p *GenomicData) GetResultFilePath() (v string) {
+	if !p.IsSetResultFilePath() {
+		return GenomicData_ResultFilePath_DEFAULT
+	}
+	return *p.ResultFilePath
+}
+func (p *GenomicData) SetId(val int64) {
+	p.Id = val
+}
+func (p *GenomicData) SetSampleId(val int64) {
+	p.SampleId = val
+}
+func (p *GenomicData) SetSequencePlatform(val *string) {
+	p.SequencePlatform = val
+}
+func (p *GenomicData) SetSequenceType(val *string) {
+	p.SequenceType = val
+}
+func (p *GenomicData) SetGeneType(val *string) {
+	p.GeneType = val
+}
+func (p *GenomicData) SetResultFilePath(val *string) {
+	p.ResultFilePath = val
+}
+
+func (p *GenomicData) IsSetSequencePlatform() bool {
+	return p.SequencePlatform != nil
+}
+
+func (p *GenomicData) IsSetSequenceType() bool {
+	return p.SequenceType != nil
+}
+
+func (p *GenomicData) IsSetGeneType() bool {
+	return p.GeneType != nil
+}
+
+func (p *GenomicData) IsSetResultFilePath() bool {
+	return p.ResultFilePath != nil
+}
+
+func (p *GenomicData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("GenomicData(%+v)", *p)
+}
+
+var fieldIDToName_GenomicData = map[int16]string{
+	1: "id",
+	2: "sampleId",
+	3: "sequencePlatform",
+	4: "sequenceType",
+	5: "geneType",
+	6: "resultFilePath",
+}
+
+type ProteomicsData struct {
+	Id               int64    `thrift:"id,1,required" frugal:"1,required,i64" json:"id"`
+	SampleId         int64    `thrift:"sampleId,2,required" frugal:"2,required,i64" json:"sampleId"`
+	AnalysisPlatform *string  `thrift:"analysisPlatform,3,optional" frugal:"3,optional,string" json:"analysisPlatform,omitempty"`
+	ProteinMarker    *string  `thrift:"proteinMarker,4,optional" frugal:"4,optional,string" json:"proteinMarker,omitempty"`
+	Concentration    *float64 `thrift:"concentration,5,optional" frugal:"5,optional,double" json:"concentration,omitempty"`
+}
+
+func NewProteomicsData() *ProteomicsData {
+	return &ProteomicsData{}
+}
+
+func (p *ProteomicsData) InitDefault() {
+}
+
+func (p *ProteomicsData) GetId() (v int64) {
+	return p.Id
+}
+
+func (p *ProteomicsData) GetSampleId() (v int64) {
+	return p.SampleId
+}
+
+var ProteomicsData_AnalysisPlatform_DEFAULT string
+
+func (p *ProteomicsData) GetAnalysisPlatform() (v string) {
+	if !p.IsSetAnalysisPlatform() {
+		return ProteomicsData_AnalysisPlatform_DEFAULT
+	}
+	return *p.AnalysisPlatform
+}
+
+var ProteomicsData_ProteinMarker_DEFAULT string
+
+func (p *ProteomicsData) GetProteinMarker() (v string) {
+	if !p.IsSetProteinMarker() {
+		return ProteomicsData_ProteinMarker_DEFAULT
+	}
+	return *p.ProteinMarker
+}
+
+var ProteomicsData_Concentration_DEFAULT float64
+
+func (p *ProteomicsData) GetConcentration() (v float64) {
+	if !p.IsSetConcentration() {
+		return ProteomicsData_Concentration_DEFAULT
+	}
+	return *p.Concentration
+}
+func (p *ProteomicsData) SetId(val int64) {
+	p.Id = val
+}
+func (p *ProteomicsData) SetSampleId(val int64) {
+	p.SampleId = val
+}
+func (p *ProteomicsData) SetAnalysisPlatform(val *string) {
+	p.AnalysisPlatform = val
+}
+func (p *ProteomicsData) SetProteinMarker(val *string) {
+	p.ProteinMarker = val
+}
+func (p *ProteomicsData) SetConcentration(val *float64) {
+	p.Concentration = val
+}
+
+func (p *ProteomicsData) IsSetAnalysisPlatform() bool {
+	return p.AnalysisPlatform != nil
+}
+
+func (p *ProteomicsData) IsSetProteinMarker() bool {
+	return p.ProteinMarker != nil
+}
+
+func (p *ProteomicsData) IsSetConcentration() bool {
+	return p.Concentration != nil
+}
+
+func (p *ProteomicsData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ProteomicsData(%+v)", *p)
+}
+
+var fieldIDToName_ProteomicsData = map[int16]string{
+	1: "id",
+	2: "sampleId",
+	3: "analysisPlatform",
+	4: "proteinMarker",
+	5: "concentration",
 }

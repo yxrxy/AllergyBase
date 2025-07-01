@@ -116,6 +116,21 @@ services:
       - allergybase
     mem_limit: 350m
 
+  frontend:
+    container_name: allergybase-frontend
+    build: 
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - allergybase
+    volumes:
+      - ../config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    env_file:
+      - "./env/frontend.env"
+
 networks:
   allergybase:
     driver: bridge

@@ -23,11 +23,7 @@ type RedisConfig struct {
 	Host     string
 	Port     int
 	Password string
-	DB       struct {
-		User   int `mapstructure:"user"`
-		Video  int `mapstructure:"video"`
-		Social int `mapstructure:"social"`
-	} `mapstructure:"db"`
+	DB       int
 }
 
 type KafkaConfig struct {
@@ -94,6 +90,33 @@ type ApiKeyConfig struct {
 	Proxy   string `mapstructure:"proxy"`
 }
 
+// 临床服务配置
+type ClinicalConfig struct {
+	Name    string
+	RPCAddr string `mapstructure:"rpc_addr"`
+}
+
+// 随访服务配置
+type FollowupConfig struct {
+	Name    string
+	RPCAddr string `mapstructure:"rpc_addr"`
+}
+
+// 流行病学服务配置
+type EpidemiologyConfig struct {
+	Name    string
+	RPCAddr string `mapstructure:"rpc_addr"`
+}
+
+// 生物样本库服务配置
+type BiobankConfig struct {
+	Name    string
+	RPCAddr string `mapstructure:"rpc_addr"`
+	Storage struct {
+		Path string `mapstructure:"path"` // 样本文件存储路径
+	} `mapstructure:"storage"`
+}
+
 var (
 	Server        *ServerConfig
 	MySQL         *MySQLConfig
@@ -108,6 +131,10 @@ var (
 	Elasticsearch *ElasticsearchConfig
 	Upyun         *UpyunConfig
 	ApiKey        *ApiKeyConfig
+	Clinical      *ClinicalConfig
+	Followup      *FollowupConfig
+	Epidemiology  *EpidemiologyConfig
+	Biobank       *BiobankConfig
 	runtimeViper  = viper.New()
 )
 
@@ -132,6 +159,10 @@ type Config struct {
 	Elasticsearch ElasticsearchConfig
 	Upyun         UpyunConfig
 	ApiKey        ApiKeyConfig `mapstructure:"api_key"`
+	Clinical      ClinicalConfig
+	Followup      FollowupConfig
+	Epidemiology  EpidemiologyConfig
+	Biobank       BiobankConfig
 }
 
 // Init 初始化配置，支持从etcd远程获取配置
@@ -193,6 +224,10 @@ func configMapping() {
 	Elasticsearch = &conf.Elasticsearch
 	Upyun = &conf.Upyun
 	ApiKey = &conf.ApiKey
+	Clinical = &conf.Clinical
+	Followup = &conf.Followup
+	Epidemiology = &conf.Epidemiology
+	Biobank = &conf.Biobank
 }
 
 // GetDSN 获取MySQL连接字符串
@@ -210,13 +245,13 @@ func GetDSN() string {
 }
 
 // GetRedisClient 获取Redis客户端实例
-func GetRedisClient(db int) *redis.Client {
+func GetRedisClient() *redis.Client {
 	if Redis == nil {
 		panic("Redis config is not initialized")
 	}
 	return redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", Redis.Host, Redis.Port),
 		Password: Redis.Password,
-		DB:       db,
+		DB:       Redis.DB, // 使用配置的 DB（默认为 0）
 	})
 }
